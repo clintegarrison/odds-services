@@ -108,7 +108,7 @@ app.get('/getSpreads', function(req, res){
   // what to do if service call fails
 })
 
-app.listen(3000, function(){
+app.listen(process.env.PORT || 9090, function(){
   console.log('starting server on port 3000')
 })
 
@@ -120,6 +120,7 @@ function getTeamName(data){
 }
 
 function getSpreads(spreadMess){
+  console.log(spreadMess)
   var spreads = {firstTeamSpread:0,secondTeamSpread:0}
 
   var firstCharAfterBr = spreadMess.substring(0,1)
@@ -133,6 +134,7 @@ function getSpreads(spreadMess){
       firstTeamSpread = firstTeamSpread.substring(0, andPosition)
     }
     firstTeamSpread = firstTeamSpread.replace('&frac12','.5')
+    firstTeamSpread = firstTeamSpread.replace('&nbsp','')
 
     spreads.firstTeamSpread = firstTeamSpread;
     spreads.secondTeamSpread = firstTeamSpread.replace('-','+')
@@ -146,6 +148,7 @@ function getSpreads(spreadMess){
       secondTeamSpread = secondTeamSpread.substring(0, andPosition)
     }
     secondTeamSpread = secondTeamSpread.replace('&frac12','.5')
+    secondTeamSpread = secondTeamSpread.replace('&nbsp','')
 
     spreads.secondTeamSpread = secondTeamSpread
     spreads.firstTeamSpread = secondTeamSpread.replace('-','+')
