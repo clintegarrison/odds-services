@@ -31,6 +31,10 @@ app.get('/getMoneyLines', function(req, res){
       var arraySplintOnTd = arraySplitOnTr[i].split('</td>')
 
       if(arraySplintOnTd.length > 2){
+        //game time
+        var gameTime = arraySplintOnTd[0].substring(arraySplintOnTd[0].indexOf('cellTextHot') + 13, arraySplintOnTd[0].length)
+        gameTime = gameTime.substring(0, gameTime.indexOf('<'))
+
         //team one
         var teamOneMess = arraySplintOnTd[0].substring(0,arraySplintOnTd[0].indexOf('</a>') + 4)
         var teamOneName = getTeamName(teamOneMess)
@@ -43,9 +47,26 @@ app.get('/getMoneyLines', function(req, res){
         //console.log(arraySplintOnTd[2])
         var moneLineBrPosition = arraySplintOnTd[2].indexOf('<br>')
         var moneyLineTeamOneValue= arraySplintOnTd[2].substring(moneLineBrPosition + 4, moneLineBrPosition + 8)
+
+        var plusOrMinusPosition = moneyLineTeamOneValue.indexOf('+')
+        if(plusOrMinusPosition<0){
+          plusOrMinusPosition = moneyLineTeamOneValue.indexOf('-')
+        }
+        if(plusOrMinusPosition>0){
+          moneyLineTeamOneValue = moneyLineTeamOneValue.substring(plusOrMinusPosition, moneyLineTeamOneValue.length)
+        }
+
         var moneyLineTeamTwoValue = arraySplintOnTd[2].substring(moneLineBrPosition + 12, moneLineBrPosition + 16)
+        plusOrMinusPosition = moneyLineTeamTwoValue.indexOf('+')
+        if(plusOrMinusPosition<0){
+          plusOrMinusPosition = moneyLineTeamTwoValue.indexOf('-')
+        }
+        if(plusOrMinusPosition>0){
+          moneyLineTeamTwoValue = moneyLineTeamTwoValue.substring(plusOrMinusPosition, moneyLineTeamTwoValue.length)
+        }
 
         var matchup = {
+          gameTime: gameTime,
           teamOne: teamOneName,
           teamTwo: teamTwoName,
           moneyLineTeamOne: moneyLineTeamOneValue,
@@ -82,6 +103,10 @@ app.get('/getSpreads', function(req, res){
       var arraySplintOnTd = arraySplitOnTr[i].split('</td>')
 
       if(arraySplintOnTd.length > 2){
+        //game time
+        var gameTime = arraySplintOnTd[0].substring(arraySplintOnTd[0].indexOf('cellTextHot') + 13, arraySplintOnTd[0].length)
+        gameTime = gameTime.substring(0, gameTime.indexOf('<'))
+
         //team one
         var teamOneMess = arraySplintOnTd[0].substring(0,arraySplintOnTd[0].indexOf('</a>') + 4)
         var teamOneName = getTeamName(teamOneMess)
@@ -101,6 +126,7 @@ app.get('/getSpreads', function(req, res){
         var spreads = getSpreads(spreadMess)
 
         var matchup = {
+          gameTime: gameTime,
           teamOne: teamOneName,
           teamTwo: teamTwoName,
           spreadTeamOne: spreads.firstTeamSpread,
@@ -127,7 +153,7 @@ function getTeamName(data){
 }
 
 function getSpreads(spreadMess){
-  console.log(spreadMess)
+  // console.log(spreadMess)
   var spreads = {firstTeamSpread:0,secondTeamSpread:0}
 
   var firstCharAfterBr = spreadMess.substring(0,1)
