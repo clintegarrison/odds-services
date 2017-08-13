@@ -94,7 +94,7 @@ app.get('/getSpreads', function(req, res){
 
     var arraySplitOnTr = tableStartAndEnd.split('<tr>')
 
-    for(i=1; i<3; i++ ){
+    for(i=1; i<arraySplitOnTr.length; i++ ){
       // console.log('-----working START')
       //console.log(arraySplitOnTr[i])
       // console.log('-----working END')
