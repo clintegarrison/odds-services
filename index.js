@@ -94,7 +94,7 @@ app.get('/getSpreads', function(req, res){
 
     var arraySplitOnTr = tableStartAndEnd.split('<tr>')
 
-    for(i=1; i<arraySplitOnTr.length; i++ ){
+    for(i=1; i<3; i++ ){
       // console.log('-----working START')
       //console.log(arraySplitOnTr[i])
       // console.log('-----working END')
@@ -141,6 +141,65 @@ app.get('/getSpreads', function(req, res){
   // what to do if service call fails
 })
 
+app.get('/getTotals', function(req, res){
+  console.log('getTotals')
+  var totalsArr = []
+  fetchUrl('http://www.vegasinsider.com/college-football/odds/las-vegas/', function(error, meta, body){
+    // console.log(body.toString())
+    var bodyString = body.toString()
+    var startPosition = bodyString.indexOf("frodds-data-tbl")
+    var tableStartAndAll = bodyString.substring(startPosition)
+
+    var tableStartAndEnd = tableStartAndAll.substring(0,tableStartAndAll.indexOf('</table>'))
+
+    var arraySplitOnTr = tableStartAndEnd.split('<tr>')
+
+    for(i=1; i<arraySplitOnTr.length; i++ ){
+      // console.log('-----working START')
+      //console.log(arraySplitOnTr[i])
+      // console.log('-----working END')
+
+      //teams
+      var arraySplintOnTd = arraySplitOnTr[i].split('</td>')
+
+      if(arraySplintOnTd.length > 2){
+        //game time
+        var gameTime = arraySplintOnTd[0].substring(arraySplintOnTd[0].indexOf('cellTextHot') + 13, arraySplintOnTd[0].length)
+        gameTime = gameTime.substring(0, gameTime.indexOf('<'))
+
+        //team one
+        var teamOneMess = arraySplintOnTd[0].substring(0,arraySplintOnTd[0].indexOf('</a>') + 4)
+        var teamOneName = getTeamName(teamOneMess)
+
+        //team two
+        var teamTwoMess = arraySplintOnTd[0].substring(arraySplintOnTd[0].indexOf('</a>') + 4)
+        var teamTwoName = getTeamName(teamTwoMess)
+
+        //consensus spread
+        var startAposition = arraySplintOnTd[2].indexOf('<a')
+        var totalsMess= arraySplintOnTd[2].substring(startAposition)
+        var endAposition = totalsMess.indexOf('<br>')
+        totalsMess = totalsMess.substring(endAposition)
+        var endATagPosition = totalsMess.indexOf('</a>')
+        totalsMess = totalsMess.substring(4, endATagPosition)
+
+        var totals = getTotals(totalsMess)
+
+        var matchup = {
+          gameTime: gameTime,
+          teamOne: teamOneName,
+          teamTwo: teamTwoName,
+          totalPoints: totals
+        }
+
+        totalsArr.push(matchup)
+      }
+    }
+    res.send(totalsArr)
+  })
+  // what to do if service call fails
+})
+
 app.listen(process.env.PORT || 9090, function(){
   console.log('starting server on port 3000')
 })
@@ -150,6 +209,20 @@ function getTeamName(data){
   teamName = teamName.substring(teamName.indexOf('>'))
   teamName = teamName.substring(1, teamName.indexOf('<'))
   return teamName
+}
+
+function getTotals(totalsMess){
+  // console.log(totalsMess)
+  var totalPoints = ''
+  var uPosition = totalsMess.indexOf('u')
+  if(uPosition>-1){
+    if(uPosition-3 > -1 && !isNaN(totalsMess.charAt(uPosition-3))){
+      totalPoints = totalsMess.substring(uPosition-3, uPosition)
+    }else{
+      totalPoints = totalsMess.substring(uPosition-2, uPosition)
+    }
+  }
+  return totalPoints
 }
 
 function getSpreads(spreadMess){
