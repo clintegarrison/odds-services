@@ -221,7 +221,14 @@ function getTotals(totalsMess){
     }else{
       totalPoints = totalsMess.substring(uPosition-2, uPosition)
     }
+
+    if(totalPoints=='12;'){
+      totalPoints = totalsMess.substring(uPosition-10, uPosition -1)
+      totalPoints = totalPoints.replace('&frac12','.5')
+      //console.log('@@@@', totalPoints)
+    }
   }
+
   return totalPoints
 }
 
