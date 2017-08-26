@@ -44,9 +44,10 @@ app.get('/getMoneyLines', function(req, res){
         var teamTwoName = getTeamName(teamTwoMess)
 
         //consensus money line
-        //console.log(arraySplintOnTd[2])
+
         var moneLineBrPosition = arraySplintOnTd[2].indexOf('<br>')
-        var moneyLineTeamOneValue= arraySplintOnTd[2].substring(moneLineBrPosition + 4, moneLineBrPosition + 8)
+        var moneyLineTeamOneValue= arraySplintOnTd[2].substring(moneLineBrPosition + 4)
+        moneyLineTeamOneValue = moneyLineTeamOneValue.substring(0, moneyLineTeamOneValue.indexOf('<')).trim()
 
         var plusOrMinusPosition = moneyLineTeamOneValue.indexOf('+')
         if(plusOrMinusPosition<0){
@@ -56,7 +57,9 @@ app.get('/getMoneyLines', function(req, res){
           moneyLineTeamOneValue = moneyLineTeamOneValue.substring(plusOrMinusPosition, moneyLineTeamOneValue.length)
         }
 
-        var moneyLineTeamTwoValue = arraySplintOnTd[2].substring(moneLineBrPosition + 12, moneLineBrPosition + 16)
+        var moneyLineTeamTwoValue = arraySplintOnTd[2].substring(moneLineBrPosition + 13)
+        moneyLineTeamTwoValue = moneyLineTeamTwoValue.substring(0, moneyLineTeamTwoValue.indexOf('<')).trim()
+
         plusOrMinusPosition = moneyLineTeamTwoValue.indexOf('+')
         if(plusOrMinusPosition<0){
           plusOrMinusPosition = moneyLineTeamTwoValue.indexOf('-')
