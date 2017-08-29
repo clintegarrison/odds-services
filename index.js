@@ -57,9 +57,10 @@ app.get('/getMoneyLines', function(req, res){
           moneyLineTeamOneValue = moneyLineTeamOneValue.substring(plusOrMinusPosition, moneyLineTeamOneValue.length)
         }
 
-        var moneyLineTeamTwoValue = arraySplintOnTd[2].substring(moneLineBrPosition + 13)
+        var moneyLineTeamTwoValue = arraySplintOnTd[2].substring(moneLineBrPosition + 12)
         moneyLineTeamTwoValue = moneyLineTeamTwoValue.substring(0, moneyLineTeamTwoValue.indexOf('<')).trim()
-
+        moneyLineTeamTwoValue = moneyLineTeamTwoValue.replace('>','')
+        moneyLineTeamTwoValue = moneyLineTeamTwoValue.replace('r','')
         plusOrMinusPosition = moneyLineTeamTwoValue.indexOf('+')
         if(plusOrMinusPosition<0){
           plusOrMinusPosition = moneyLineTeamTwoValue.indexOf('-')
