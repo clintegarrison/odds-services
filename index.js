@@ -204,6 +204,73 @@ app.get('/getTotals', function(req, res){
   // what to do if service call fails
 })
 
+app.get('/getScores', function(req, res){
+  var moneyLineMatchups = []
+  fetchUrl('http://www.vegasinsider.com/college-football/scoreboard/', function(error, meta, body){
+    var bodyString = body.toString()
+    var startPosition = bodyString.indexOf('SLTables4')
+    bodyString = bodyString.substring(startPosition - 13, bodyString.length)
+    var endDivPosition = bodyString.indexOf('</div>')
+
+    bodyString = bodyString.substring(0, endDivPosition + 6)
+
+    var games = bodyString.split('/graphics/component_shadow2.gif')
+
+    var gamesArray = []
+
+    for(var i=0; i<games.length; i++){
+      var gameChunk = games[i]
+      var teamUrlPos = games[i].indexOf('team-page')
+      gameChunk = gameChunk.substring(teamUrlPos, gameChunk.length)
+      var closeBracketPos = gameChunk.indexOf('>')
+      var openBracketPos = gameChunk.indexOf('<')
+      var teamOne = gameChunk.substring(closeBracketPos + 1, openBracketPos)
+
+      gameChunk = games[i].substring(games[i].indexOf(teamOne), games[i].length)
+      teamUrlPos = gameChunk.indexOf('team-page')
+      gameChunk = gameChunk.substring(teamUrlPos, gameChunk.length)
+      closeBracketPos = gameChunk.indexOf('>')
+      openBracketPos = gameChunk.indexOf('<')
+      var teamTwo = gameChunk.substring(closeBracketPos + 1, openBracketPos)
+
+      gameChunk = games[i]
+      var titlePos = gameChunk.indexOf('<span class="sub_title_red">')
+      gameChunk = gameChunk.substring(titlePos + 28, gameChunk.length)
+      var spanEndPos = gameChunk.indexOf('</span>')
+      var gameState = gameChunk.substring(0, spanEndPos).trim()
+
+      gameChunk = games[i]
+      var teamOneTotalPos = gameChunk.indexOf('<font color="#b20000"><B> &nbsp;')
+      gameChunk = gameChunk.substring(teamOneTotalPos, gameChunk.length)
+      var bOpenPos = gameChunk.indexOf('<B>')
+      var bClosePos = gameChunk.indexOf('</B>')
+      var teamOneScore = gameChunk.substring(bOpenPos + 3, bClosePos)
+      teamOneScore = teamOneScore.replace('&nbsp;','').trim()
+      teamOneScore = teamOneScore.replace('&nbsp;','').trim()
+
+      gameChunk = games[i].substring(teamOneTotalPos + 25, games[i].length)
+      var teamTwoTotalPos = gameChunk.indexOf('<font color="#b20000"><B> ')
+      gameChunk = gameChunk.substring(teamTwoTotalPos, gameChunk.length)
+      var bOpenPos = gameChunk.indexOf('<B>')
+      var bClosePos = gameChunk.indexOf('</B>')
+      var teamTwoScore = gameChunk.substring(bOpenPos + 3, bClosePos)
+      teamTwoScore = teamTwoScore.replace('&nbsp;','').trim()
+      teamTwoScore = teamTwoScore.replace('&nbsp;','').trim()
+
+      var game = {
+        teamOne: teamOne,
+        teamTwo: teamTwo,
+        teamOneScore: teamOneScore,
+        teamTwoScore: teamTwoScore
+      }
+
+      gamesArray.push(game)
+    }
+
+    res.send(gamesArray)
+  })
+})
+
 app.listen(process.env.PORT || 9090, function(){
   console.log('starting server on port 3000')
 })
