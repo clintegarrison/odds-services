@@ -257,11 +257,26 @@ app.get('/getScores', function(req, res){
       teamTwoScore = teamTwoScore.replace('&nbsp;','').trim()
       teamTwoScore = teamTwoScore.replace('&nbsp;','').trim()
 
+      var winner = ''
+
+      if(isNaN(teamOneScore) || isNaN(teamTwoScore)){
+        teamOneScore=''
+        teamTwoScore=''
+      }else{
+        if(parseInt(teamOneScore) > parseInt(teamTwoScore)){
+          winner = teamOne
+        }else{
+          winner = teamTwo
+        }
+      }
+
       var game = {
         teamOne: teamOne,
         teamTwo: teamTwo,
         teamOneScore: teamOneScore,
-        teamTwoScore: teamTwoScore
+        teamTwoScore: teamTwoScore,
+        gameState: gameState,
+        winner: winner
       }
 
       gamesArray.push(game)
