@@ -206,7 +206,8 @@ app.get('/getTotals', function(req, res){
 
 app.get('/getScores', function(req, res){
   var moneyLineMatchups = []
-  fetchUrl('http://www.vegasinsider.com/college-football/scoreboard/scores.cfm/week/1/season/2017', function(error, meta, body){
+  var url = 'http://www.vegasinsider.com/college-football/scoreboard/scores.cfm/week/' + req.query.weekNo + '/season/2017'
+  fetchUrl(url, function(error, meta, body){
     var bodyString = body.toString()
     var startPosition = bodyString.indexOf('SLTables4')
     bodyString = bodyString.substring(startPosition - 13, bodyString.length)
