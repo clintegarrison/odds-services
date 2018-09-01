@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const fetchUrl = require('fetch').fetchUrl
+const crypto = require('crypto')
 
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -70,6 +71,7 @@ app.get('/getMoneyLines', function(req, res){
         }
 
         var matchup = {
+          gameId: crypto.createHash('sha1').update(teamOneName+teamTwoName+gameTime).digest('base64'),
           gameTime: gameTime,
           teamOne: teamOneName,
           teamTwo: teamTwoName,
@@ -130,6 +132,7 @@ app.get('/getSpreads', function(req, res){
         var spreads = getSpreads(spreadMess)
 
         var matchup = {
+          gameId: crypto.createHash('sha1').update(teamOneName+teamTwoName+gameTime).digest('base64'),
           gameTime: gameTime,
           teamOne: teamOneName,
           teamTwo: teamTwoName,
@@ -190,6 +193,7 @@ app.get('/getTotals', function(req, res){
         var totals = getTotals(totalsMess)
 
         var matchup = {
+          gameId: crypto.createHash('sha1').update(teamOneName+teamTwoName+gameTime).digest('base64'),
           gameTime: gameTime,
           teamOne: teamOneName,
           teamTwo: teamTwoName,
